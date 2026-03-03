@@ -1,0 +1,6 @@
+# 1. Gunakan Base Image Resmi
+FROM phpmyadmin/phpmyadmin
+
+# 2. Expose Port (Dokumentasi)
+# Memberi tahu developer lain bahwa container ini berjalan di port 80
+EXPOSE 80

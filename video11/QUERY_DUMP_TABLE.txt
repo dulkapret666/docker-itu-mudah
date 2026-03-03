@@ -1,0 +1,9 @@
+INSERT INTO tm_profile (nama, alamat, no_hp, email) VALUES 
+('Budi Santoso', 'Jl. Merdeka No. 1, Jakarta', '081234567890', 'budi@gmail.com'),
+('Siti Aminah', 'Jl. Sudirman No. 45, Bandung', '081298765432', 'siti.aminah@yahoo.com'),
+('Andi Wijaya', 'Komplek Permata Blok A1, Surabaya', '081355556666', 'andi.wijaya@outlook.com'),
+('Rina Marlina', 'Gg. Kancil No. 12, Yogyakarta', '081977778888', 'rina.marlina@gmail.com'),
+('Doni Pratama', 'Jl. Diponegoro No. 88, Semarang', '085712341234', 'doni.pratama@gmail.com'),
+('Eka Saputra', 'Jl. Gajah Mada, Medan', '082100009999', 'eka.saputra@company.com'),
+('Fanny Hapsari', 'Perumahan Elit No. 10, Bali', '081233334444', 'fanny.h@icloud.com'),
+('Gilang Ramadhan', 'Jl. Pahlawan, Makassar', '089655551111', 'gilang.r@gmail.com');

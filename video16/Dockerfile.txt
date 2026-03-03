@@ -1,0 +1,36 @@
+# -----------------------------------------------------------
+# DOCKERFILE APACHE + LIBRARY MYSQLI
+# Lokasi: docker/apache/Dockerfile
+# Fungsi: Membuat image Apache yang sudah ada PHP & Driver MySQL
+# -----------------------------------------------------------
+
+# A. BASE IMAGE
+# Kita pakai image resmi PHP yang sudah ada Apache-nya.
+# Bedanya dengan Nginx: Image ini sudah bisa langsung melayani HTTP request.
+FROM php:8.2-apache
+
+# B. WORKDIR
+# Pengaturan Folder Kerja Untuk Tempat File Source Code Kita 
+# Apache secara default membaca file di /var/www/html
+WORKDIR /var/www/html
+
+# C. INSTALL EKSTENSI (SOLUSI PERMANEN ERROR MYSQLI)
+# Ingat error "Call to undefined function mysqli"?
+# Baris inilah solusinya! Kita perintahkan Docker untuk install drivernya
+# saat proses pembuatan image (Build), bukan saat container jalan.
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# D. AKTIFKAN MOD REWRITE (Bonus Materi)
+# Ini fitur khas Apache untuk mempercantik URL (misal untuk .htaccess)
+# Sangat berguna jika nanti teman-teman pakai framework.
+RUN a2enmod rewrite
+
+# E. COPY SOURCE CODE
+# Masukkan kode 'src/' dari laptop ke dalam image.
+# Image ini sekarang sudah "berisi" aplikasi kita.
+# Simplenya Mengcopy seluruh isi file pada folder src ke WORKDIR 
+COPY ./src .
+
+# F. HAK AKSES
+# Ubah kepemilikan file ke user 'www-data' (User standar Apache)
+RUN chown -R www-data:www-data /var/www/html

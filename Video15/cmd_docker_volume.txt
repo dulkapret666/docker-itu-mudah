@@ -1,0 +1,3 @@
+docker run -d --name mariadb --network jaringan-app -v "%cd%\docker\mariadb\mysql-data":/var/lib/mysql -e MYSQL_ROOT_PASSWORD=rahasia -e MYSQL_DATABASE=db_latihan mariadb:latest
+
+

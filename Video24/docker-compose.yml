@@ -1,0 +1,97 @@
+version: '3.8'
+services:
+  # ================================================================
+  # 1. DATABASE SERVER (MariaDB)
+  # ================================================================
+  mariadb: # <-- Nama service
+    build:
+      context: . #Tanda Titik (.) berarti: "Hai Docker, tolong berdiri di Root Folder"
+      dockerfile: docker/mariadb/Dockerfile
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_HOST: '%'  # Mengizinkan akses dari semua host
+      MYSQL_ROOT_PASSWORD: rahasia
+      MYSQL_DATABASE: db_latihan
+    volumes:
+      - ./docker/mariadb/mysql-data:/var/lib/mysql
+    networks:
+      - jaringan-app
+
+  # ================================================================
+  # 2. GUI DATABASE (PhpMyAdmin) -> Port 8082
+  # ================================================================
+  pma-server: # <-- Nama service
+    build:
+      context: . #Tanda Titik (.) berarti: "Hai Docker, tolong berdiri di Root Folder"
+      dockerfile: docker/phpmyadmin/Dockerfile
+    container_name: phpmyadmin
+    ports:
+      - "8082:80"  # Mapping Host Port 8082 ke Container Port 80
+    environment:
+      # Menghubungkan ke service database 'mariadb'
+      PMA_HOST: mariadb
+      PMA_USER: root
+      PMA_PASSWORD: rahasia
+    depends_on:
+    # Analogi 'depends_on' service ini (pma-server) bergantung pada service mariadb
+    # Simplenya 'pma-server' berjalan setelah service mariadb
+      - mariadb 
+    networks:
+      - jaringan-app
+
+  # ================================================================
+  # 3. APLIKASI APACHE (Monolitik) -> Port 8080
+  # ================================================================
+  apache-app:
+    build:
+      context: .
+      dockerfile: docker/php-apache/Dockerfile
+    container_name: php-apache
+    ports:
+      - "8080:80"  # Mapping Host Port 8080 ke Container Port 80
+    depends_on:
+    # Analogi 'depends_on' service ini (apache-app) bergantung pada service mariadb
+    # Simplenya 'apache-app' berjalan setelah service mariadb 
+      - mariadb
+    networks:
+      - jaringan-app
+
+  # ================================================================
+  # 4. PHP PROCESSOR (Backend untuk Nginx)
+  # ================================================================
+  phpfpm-service:
+    # PENTING: Nama service ini 'php-service' HARUS SAMA dengan
+    # konfigurasi fastcgi_pass di file 'docker/nginx/default.conf'
+    build:
+      context: .
+      dockerfile: docker/php-fpm/Dockerfile
+    container_name: phpfpm-service
+    networks:
+      - jaringan-app
+
+  # ================================================================
+  # 5. APLIKASI NGINX (Frontend) -> Port 8081
+  # ================================================================
+  nginx-app:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: nginx-server
+    ports:
+      - "8081:80"  # Mapping Host Port 8081 ke Container Port 80
+    depends_on:
+    # Analogi 'depends_on' service ini (nginx-app) bergantung pada service phpfpm-service
+    # Simplenya 'nginx-app' berjalan setelah service phpfpm-service
+      - phpfpm-service 
+    networks:
+      - jaringan-app
+
+# ================================================================
+# VOLUME & NETWORK
+# ================================================================
+volumes:
+  mysql-data:
+
+networks:
+  jaringan-app:
+    driver: bridge

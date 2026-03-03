@@ -1,0 +1,21 @@
+# -----------------------------------------------------------
+# DOCKERFILE NGINX
+# Lokasi: docker/nginx/Dockerfile
+# Fungsi: Membuat image Nginx dengan konfigurasi custom
+# -----------------------------------------------------------
+
+# A. Menggunakan image Nginx versi terbaru
+FROM nginx:latest
+
+# B. Menghapus konfigurasi default bawaan Nginx
+# Ini dilakukan agar tidak bentrok dengan konfigurasi kita.
+RUN rm /etc/nginx/conf.d/default.conf
+
+# C. Menyalin konfigurasi custom kita ke dalam container
+# Pastikan file 'default.conf' ada di folder yang sama dengan Dockerfile ini.
+COPY ./docker/nginx/default.conf /etc/nginx/conf.d/
+
+# D. Menyalin Source Code (Opsional tapi Disarankan)
+# Nginx juga perlu akses ke file statis (html/css/js/gambar).
+# Meskipun PHP yang memproses .php, Nginx tetap perlu tahu file itu ada.
+COPY ./src /var/www/html

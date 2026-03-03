@@ -1,0 +1,41 @@
+# -----------------------------------------------------------
+# DOCKERFILE PHP-FPM
+# Lokasi: docker/php-fpm/Dockerfile
+# Fungsi: Membuat image PHP yang berisi driver DB & Source Code
+# -----------------------------------------------------------
+
+# A. BASE IMAGE
+# Menggunakan image resmi PHP versi 8.2 varian FPM (FastCGI Process Manager).
+# Varian 'fpm' wajib digunakan jika web servernya adalah Nginx.
+FROM php:8.2-fpm
+
+# B. WORKDIR (Direktori Kerja)
+# Menetapkan '/var/www/html' sebagai folder aktif di dalam container.
+# Semua perintah COPY dan RUN selanjutnya akan dieksekusi di titik ini.
+WORKDIR /var/www/html
+
+# C. INSTALL EKSTENSI (Solusi Error 'Call to undefined function mysqli')
+# Image PHP bawaan sangat minimalis. Kita WAJIB menginstall driver database
+# secara manual menggunakan helper script 'docker-php-ext-install'.
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# D. COPY SOURCE CODE (Memasukkan Kode dari Lokal ke Image)
+# Perintah ini menyalin isi folder 'src/' dari komputer host (lokal)
+# ke dalam folder saat ini (WORKDIR) di container.
+# NOTE: Ini mengasumsikan 'build context' dijalankan dari root folder proyek.
+COPY ./src .
+
+# E. PERMISSION (Hak Akses)
+# Mengubah kepemilikan file agar user 'www-data' (user default Nginx/PHP)
+# bisa membaca dan menulis file tersebut. Penting untuk keamanan.
+RUN chown -R www-data:www-data /var/www/html
+
+# F. EXPOSE PORT
+# Memberi informasi bahwa container ini akan mendengarkan port 9000.
+# Port 9000 kenapa diexpose, karena nanti akan digunakan oleh container nginx 
+# lihat kode pada file /docker/nginx/default.conf "fastcgi_pass php-service:9000;"
+EXPOSE 9000
+
+# G. COMMAND
+# Perintah default yang dijalankan saat container start.
+CMD ["php-fpm"]

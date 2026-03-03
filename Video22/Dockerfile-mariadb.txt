@@ -1,0 +1,2 @@
+# 1. Gunakan Base Image Resmi
+FROM mariadb:latest

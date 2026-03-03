@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS tm_profile (
+    id_profile INT AUTO_INCREMENT PRIMARY KEY,
+    nama VARCHAR(100) NOT NULL,
+    alamat TEXT NOT NULL,
+    no_hp VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
